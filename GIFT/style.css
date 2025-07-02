@@ -1,0 +1,410 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Pacifico', cursive;
+    color: #333;
+    background: linear-gradient(to top, #c9ffff, #00c3ff);
+    position: relative;
+}
+
+/* --- Corações Flutuantes no Fundo (mantido) --- */
+.heart {
+    position: absolute;
+    font-size: 1.5em;
+    color: rgba(255, 255, 255, 0.7);
+    animation: floatHeart 15s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes floatHeart {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+    25% { transform: translateY(-20px) translateX(10px) scale(1.05); opacity: 0.9; }
+    50% { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+    75% { transform: translateY(20px) translateX(-10px) scale(0.95); opacity: 0.7; }
+    100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* --- Envelope (mantido do original) --- */
+.envelope {
+    width: 280px;
+    height: 200px;
+    background-color: #f7e0c4;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    z-index: 10;
+}
+
+.envelope:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.envelope-flap {
+    width: 0;
+    height: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-bottom: 100px solid #ddc3a5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top;
+    transition: transform 0.5s ease;
+    z-index: 1;
+}
+
+.envelope-body {
+    width: 100%;
+    height: 100%;
+    background-color: #f7e0c4;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 10px;
+}
+
+.envelope-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 1.2em;
+    color: #8b4513;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 5;
+    padding: 10px;
+    width: 80%;
+    box-sizing: border-box;
+}
+
+.envelope-heart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: #0471ff;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+/* --- Estado do envelope aberto --- */
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+}
+
+.envelope.open .envelope-message {
+    opacity: 1;
+}
+
+.envelope.open .envelope-heart {
+    opacity: 0;
+}
+
+/* --- Balões (mantido do original) --- */
+.balloons {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.balloon {
+    position: absolute;
+    background-color: #f06292;
+    border-radius: 50%;
+    width: 50px;
+    height: 60px;
+    bottom: -100px;
+    opacity: 0;
+    animation: rise 8s forwards ease-out;
+    box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.balloon::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background-color: inherit;
+    border-radius: 0 0 50% 50%;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    z-index: -1;
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 50px;
+    background-color: rgba(0, 0, 0, 0.3);
+    bottom: -55px;
+    left: calc(50% - 1px);
+}
+
+.balloon:nth-child(2n) { background-color: #81c784; }
+.balloon:nth-child(3n) { background-color: #64b5f6; }
+.balloon:nth-child(4n) { background-color: #ffb74d; }
+.balloon:nth-child(5n) { background-color: #ba68c8; }
+
+@keyframes rise {
+    from {
+        bottom: -100px;
+        opacity: 0;
+        transform: translateX(0);
+    }
+    to {
+        bottom: 120%;
+        opacity: 0.8;
+        transform: translateX(calc((random() * 200px) - 100px));
+    }
+}
+
+/* --- Confetes (Canvas, mantido do original) --- */
+#confetti-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+}
+
+/* --- Conteúdo Pós-Abertura (Carrossel de Fotos e Texto) --- */
+.after-open-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+    z-index: 40;
+    width: 90%; /* Ajuste para celular */
+    max-width: 600px; /* Largura máxima para telas maiores */
+    text-align: center;
+}
+
+.after-open-content.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.carousel-container {
+    position: relative;
+    overflow: hidden; /* Garante que os slides fora da vista fiquem escondidos */
+    height: auto; /* Altura ajustável ao conteúdo */
+    padding-bottom: 60px; /* Espaço para os botões */
+}
+
+.carousel-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out; /* Transição suave entre slides */
+}
+
+.carousel-slide {
+    flex: 0 0 100%; /* Cada slide ocupa 100% da largura do contêiner */
+    display: flex;
+    flex-direction: column; /* Foto e texto empilhados por padrão */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px; /* Pequeno padding para o conteúdo */
+    box-sizing: border-box; /* Garante que padding não aumente a largura total */
+}
+
+.carousel-slide img {
+    max-width: 90%; /* Limita o tamanho da imagem para caber na tela */
+    max-height: 250px; /* Altura máxima para imagens em celular */
+    width: auto; /* Mantém a proporção da imagem */
+    height: auto; /* Mantém a proporção da imagem */
+    object-fit: contain; /* Garante que a imagem inteira seja visível */
+    border-radius: 10px; /* Cantos arredondados */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); /* Sombra para "flutuar" */
+    margin-bottom: 20px; /* Espaço entre a imagem e o texto */
+    border: 3px solid rgba(255, 255, 255, 0.8); /* Borda suave */
+    transition: transform 0.3s ease-in-out;
+}
+
+.carousel-slide img:hover {
+    transform: scale(1.03); /* Leve zoom no hover */
+}
+
+.slide-text {
+    color: #4a2a11;
+    line-height: 1.6;
+    font-size: 1em; /* Tamanho da fonte para parágrafos */
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.6);
+    max-width: 95%; /* Garante que o texto não seja muito largo */
+}
+
+.slide-text h2 {
+    font-size: 1.8em; /* Título do slide */
+    margin-bottom: 10px;
+    color: #1974b1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slide-text p {
+    font-size: 1em; /* Parágrafo */
+    margin-top: 0;
+}
+
+.carousel-navigation {
+    position: absolute;
+    bottom: 0; /* Alinha os botões na parte inferior */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Espaço entre os botões */
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+/* Estilo do botão (usado para Próximo/Voltar e o link Surpresa!) */
+.nav-button {
+    background-color: #00b7ff; /* Cor dos botões (vermelho do coração) */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px; /* Botões arredondados */
+    font-family: 'Pacifico', cursive;
+    font-size: 1.1em;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    outline: none; /* Remove a borda de foco padrão */
+    text-decoration: none; /* Para links, remove o sublinhado */
+    display: inline-block; /* Para links, permite padding e outras propriedades de bloco */
+}
+
+.nav-button:hover {
+    background-color: #c0392b; /* Cor mais escura no hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+    display: none; /* Esconde o botão/elemento completamente do layout */
+}
+
+/* Media query para telas menores que 600px (smartphones) */
+@media (max-width: 600px) {
+    .envelope {
+        width: 250px;
+        height: 180px;
+    }
+
+    .envelope-flap {
+        border-left: 125px solid transparent;
+        border-right: 125px solid transparent;
+        border-bottom: 90px solid #ddc3a5;
+    }
+
+    .envelope-message {
+        font-size: 1em;
+    }
+
+    .envelope-heart {
+        font-size: 2.5em;
+    }
+
+    .balloon {
+        width: 40px;
+        height: 50px;
+    }
+
+    .balloon::after {
+        height: 40px;
+    }
+
+    .after-open-content {
+        max-width: 95%;
+    }
+
+    .carousel-slide {
+        padding: 5px;
+    }
+
+    .carousel-slide img {
+        max-width: 100%; /* Permite que a imagem use a largura total disponível */
+        max-height: 200px; /* Diminui a altura máxima para celular */
+        margin-bottom: 15px;
+    }
+
+    .slide-text h2 {
+        font-size: 1.6em; /* Título menor para celular */
+    }
+
+    .slide-text p {
+        font-size: 0.9em; /* Parágrafo menor para celular */
+    }
+
+    .nav-button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
+
+/* Layout para tablet e desktop (min-width: 601px) - Foto ao lado do texto */
+@media (min-width: 601px) {
+    .carousel-slide {
+        flex-direction: row; /* Foto e texto lado a lado */
+        gap: 30px; /* Espaçamento entre foto e texto */
+        padding: 20px;
+    }
+
+    .carousel-slide img {
+        max-width: 40%; /* Imagem ocupa 40% da largura */
+        max-height: 300px; /* Altura máxima maior */
+        margin-bottom: 0; /* Remove margem inferior, já que não está empilhado */
+    }
+
+    .slide-text {
+        flex: 1; /* Texto ocupa o restante do espaço */
+        max-width: 55%; /* Limita a largura do texto */
+        text-align: left; /* Alinha o texto à esquerda */
+    }
+
+    .slide-text h2 {
+        font-size: 2.2em; /* Tamanho do título para desktop */
+    }
+
+    .slide-text p {
+        font-size: 1.1em; /* Tamanho do parágrafo para desktop */
+    }
+
+    .carousel-slide.final-slide .slide-text {
+        text-align: center; /* Centraliza a mensagem final mesmo em desktop */
+    }
+}
